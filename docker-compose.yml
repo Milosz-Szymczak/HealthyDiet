@@ -1,0 +1,62 @@
+version: '3'
+services:
+
+  ## Mongo Databases
+  mongo-dish:
+    container_name: mongo-dish
+    image: mongo:4.4.14-rc0-focal
+    restart: always
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+
+  mongo-ingredient:
+    container_name: mongo-ingredient
+    image: mongo:4.4.14-rc0-focal
+    restart: always
+    ports:
+      - "27018:27018"
+
+  mongo-management-meal:
+    container_name: mongo-management-meal
+    image: mongo:4.4.14-rc0-focal
+    restart: always
+    ports:
+      - "27019:27019"
+
+  ## Dish-Service
+  dish-service:
+    build:
+      context: ./dish-service
+    container_name: dish-service
+    depends_on:
+      - mongo-dish
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8081:8080"
+
+  ## Ingredient-Service
+  ingredient-service:
+    build:
+      context: ./ingredient-service
+    container_name: ingredient-service
+    depends_on:
+      - mongo-ingredient
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8082:8080"
+
+  ## Management-Meal-Service
+  management-meal-service:
+    build:
+      context: ./management-meal-service
+    container_name: management-meal-service
+    depends_on:
+      - mongo-management-meal
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8083:8080"
